@@ -1,0 +1,6 @@
+start of report
+cycle started at 2017-05-24 17:30:13.800673
+class connected 
+wrote ls_data for subject  1
+wrote ls_data for subject  1
+finished looping from 2017-05-24 17:30:13.800673 till 2017-05-24 17:30:22.402035.
