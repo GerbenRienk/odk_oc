@@ -1,8 +1,8 @@
 from ocwebservices import studySubjectWS
 from dictfile import readDictFile
 
-config=readDictFile('oli.config')
-#myFile=filesOnDisk.propertiesFile('oli.config')
+config=readDictFile('odkoc.config')
+#myFile=filesOnDisk.propertiesFile('odkoc.config')
 
 myWebService = studySubjectWS(config['userName'], config['password'], config['baseUrl'])
 

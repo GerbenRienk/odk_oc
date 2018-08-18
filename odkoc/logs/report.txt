@@ -1,6 +1,4 @@
 start of report
-cycle started at 2017-05-24 17:30:13.800673
-class connected 
-wrote ls_data for subject  1
-wrote ls_data for subject  1
-finished looping from 2017-05-24 17:30:13.800673 till 2017-05-24 17:30:22.402035.
+cycle started at 2018-08-18 12:14:49.576585
+try to connect to util database, result: class connected  
+finished looping from 2018-08-18 12:14:49.576585 till 2018-08-18 12:14:50.668438.

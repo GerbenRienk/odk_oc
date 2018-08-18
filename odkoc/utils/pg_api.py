@@ -1,5 +1,5 @@
 '''
-To connect to postgresql database as defined in oli.config
+To connect to postgresql database as defined in odkoc.config
 Read subjects and write subjects
 Created on 14 apr. 2017
 
@@ -8,13 +8,13 @@ Created on 14 apr. 2017
 import psycopg2
 from utils.dictfile import readDictFile
 
-class ConnToOliDB(object):
-    '''Class for connecting to the postgresql database as defined in oli.config
+class ConnToOdkUtilDB(object):
+    '''Class for connecting to the postgresql database as defined in odkoc.config
     Methods implemented now are read subjects and add subjects '''
     def __init__(self):
         'let us create the connection to use multiple times'
-        config=readDictFile('oli.config')
-        conn_string = "host='" + config['dbHost'] + "' dbname='" + config['dbName'] + "' user='" + config['dbUser'] + "' password='" + config['dbPass'] + "'"
+        config=readDictFile('odkoc.config')
+        conn_string = "host='" + config['db_host'] + "' dbname='" + config['db_name'] + "' user='" + config['db_user'] + "' password='" + config['db_pass'] + "'"
         self.init_result = ''
         
         # get a connection, if a connect cannot be made an exception will be raised here
@@ -81,7 +81,7 @@ class PGSubject(object):
     '''to get the study subject oid from the study subject id
     by calling the rest-webservice
     Only parameter is study subject id
-    Connection info is read from oli.config
+    Connection info is read from odkoc.config
     '''
     def __init__(self, PGStudySubjectID):
         self._studysubjectid = PGStudySubjectID
@@ -91,7 +91,7 @@ class PGSubject(object):
         'method to get the StudySubjectOID using rest'
         import requests
         import xml.etree.ElementTree as ET
-        config=readDictFile('oli.config')
+        config=readDictFile('odkoc.config')
         
         login_url = config['baseUrlRest'] + '/j_spring_security_check'
         login_action = {'action':'submit'}
