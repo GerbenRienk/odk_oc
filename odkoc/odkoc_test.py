@@ -1,5 +1,5 @@
 '''
-Created on 9 apr. 2017
+Created on 20180818
 
 @author: GerbenRienk
 '''
@@ -7,13 +7,14 @@ import time
 import datetime
 import logmailer
 from utils.dictfile import readDictFile
-#from utils.ocwebservices import studySubjectWS, dataWS
+from utils.ocwebservices import studySubjectWS, dataWS
 #from utils.limesurveyrc2api import LimeSurveyRemoteControl2API
-from utils.pg_api import ConnToOdkUtilDB, PGSubject
+from utils.pg_api import ConnToOdkUtilDB, ConnToOdkDB, PGSubject
 from utils.reporter import Reporter
 from _operator import itemgetter
 
 def cycle_through_syncs():
+    # we start by reading the config file and preparing the connections to the databases 
     my_report = Reporter()
     start_time = datetime.datetime.now()
     my_report.append_to_report('cycle started at ' + str(start_time))
@@ -23,40 +24,52 @@ def cycle_through_syncs():
     #event_survey_pairs=readDictFile('event_survey_pairs')
 
     # initialise the oc-webservice
-    #myWebService = studySubjectWS(config['userName'], config['password'], config['baseUrl'])
+    myWebService = studySubjectWS(config['userName'], config['password'], config['baseUrl'])
     #myDataWS = dataWS(config['userName'], config['password'], config['baseUrl'])
 
     # create a connection to the postgresql database
-    conn = ConnToOdkUtilDB()
-    my_report.append_to_report('try to connect to util database, result: %s ' % conn.init_result)
+    conn_util = ConnToOdkUtilDB()
+    my_report.append_to_report('try to connect to util database, result: %s ' % conn_util.init_result)
+    conn_odk= ConnToOdkDB()
+    my_report.append_to_report('try to connect to odk database, result: %s ' % conn_odk.init_result)
     
     # our cycle starts here and ends at the break
     while True:
-        # retrieve all StudySubjectEvents, using the webservice
-        #allStudySubjectEvents = myWebService.getListStudySubjectEvents(config['studyIdentifier'])
-        # now we have the StudySubjectIDs, run them against the postgresql table subjects
-        
-        # retrieve the subjects, using the connection to the postgresql database
+        # 1: start with retrieving the rows of odk-table HS_RDT_READER_1_V1_CORE
+        odk_results = conn_odk.ReadDataFromOdkTable("odk_prod.\"HS_RDT_READER_1_V1_CORE\"")
+        # for the study subject id look in:
+        # odk_result['GENERAL_INFORMATION_STUDY_SUBJECT_ID']
+            
+        # 2: create subject in oc, if necessary
+        # retrieve all StudySubjectEvents from oc, using the webservice
+        allStudySubjectsInOC = myWebService.getListStudySubjectEvents(config['studyIdentifier'])
+                
+        # retrieve the subjects that we created earlier, using the connection to the postgresql database
         #subjects_in_db = conn.ReadSubjectsFromDB()
-        
-        #for studysubject_event in allStudySubjectEvents:  
-            # check if StudySubjectID is already in pg_database
-            #add_subject_to_db = True
-            #for subject_in_db in subjects_in_db:  
-                # check if we must check this event
-                #if(studysubject_event[0] == subject_in_db[1]):
-                    #add_subject_to_db = False
-            #if (add_subject_to_db):
+        for odk_result in odk_results:
+            # check if StudySubjectID from odk is already in oc
+            add_subject_to_db = True
+            # compare with all oc subjects events
+            for studysubject_oc in allStudySubjectsInOC:
+                if(studysubject_oc[0] == odk_result['GENERAL_INFORMATION_STUDY_SUBJECT_ID']):
+                    add_subject_to_db = False
+                    
+            if (add_subject_to_db):
+                print("let's add " + odk_result['GENERAL_INFORMATION_STUDY_SUBJECT_ID'] + " to the database")
                 #myPgSubject = PGSubject(studysubject_event[0])
                 #conn.AddSubjectsToDB([(myPgSubject.GetSSOID(), studysubject_event[0])])
                 #my_report.append_to_report('added %s to database' % studysubject_event[0])
+
+        # 3: schedule events in oc and retrieve the study subject oid as result
+        
+        # 4: create the ws data
         
         # now all StudySubjects in OpenClinica are also in our postgresql-database
         # so we refresh our list 
         #subjects_in_db = conn.ReadSubjectsFromDB()
         
         # collecting LimeSurvey data
-        # Make a session, which is a bit of overhaed, but the script will be running for hours.
+        # Make a session, which is a bit of overhead, but the script will be running for hours.
         #api = LimeSurveyRemoteControl2API(config['lsUrl'])
         #session_req = api.sessions.get_session_key(config['lsUser'], config['lsPassword'])
         #session_key = session_req.get('result')

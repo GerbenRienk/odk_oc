@@ -16,12 +16,16 @@ class studySubjectWS(object):
     '''
 
     def __init__(self, username, password, baseUrl):
+        self._username = username
         passwordHash = hashlib.sha1(password.encode('utf-8')).hexdigest()
+        self._passwordHash = hashlib.sha1(password.encode('utf-8')).hexdigest()
         wsUrl = baseUrl + '/ws/study/v1/studySubjectWsdl.wsdl'
+        self._thisURL = wsUrl
         self._client = zeep.Client(
             wsUrl,
             strict=False,
             wsse=UsernameToken(username, password=passwordHash))
+        
 
     def getStudySubjectEvents(self,studyIdentifier):
         """Get xml output of study subject events
@@ -64,7 +68,52 @@ class studySubjectWS(object):
                             
                             one_studysubject_event = studySubjectID,eventDefinitionOID,startDate
                             all_studysubject_events.append(one_studysubject_event)
+                            
         return all_studysubject_events
+
+    def addStudySubject(self,studyIdentifier,studysubjectid):
+        import requests
+     
+        headers = {'content-type': 'text/xml'}
+        body = """<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://openclinica.org/ws/studySubject/v1" xmlns:bean="http://openclinica.org/ws/beans"><soapenv:Header>
+ <wsse:Security soapenv:mustUnderstand="1" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
+ <wsse:UsernameToken wsu:Id="UsernameToken-27777511" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">"""
+        body = body + '<wsse:Username>' + self._username + '</wsse:Username>'
+        body = body + '<wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">' + self._passwordHash + '</wsse:Password>'
+        body = body + '</wsse:UsernameToken>'
+        body = body + '</wsse:Security>'
+        body = body + '</soapenv:Header>'
+        body = body + '<soapenv:Body>'
+        body = body + '<v1:createRequest>'
+        body = body + '<v1:studySubject>'
+        body = body + '<bean:label>' + studysubjectid + '</bean:label>'
+        body = body + '<bean:secondaryLabel></bean:secondaryLabel>'
+        body = body + '<bean:enrollmentDate>1980-01-01</bean:enrollmentDate>'
+        body = body + '<bean:subject>'
+        body = body + '<bean:uniqueIdentifier></bean:uniqueIdentifier>'
+        body = body + '<bean:gender>f</bean:gender>'
+        body = body + '<bean:dateOfBirth></bean:dateOfBirth>'
+        body = body + '</bean:subject>'
+        body = body + '<bean:studyRef>'
+        body = body + '<bean:identifier>' + studyIdentifier + '</bean:identifier>'
+        body = body + '</bean:studyRef>'
+        body = body + '</v1:studySubject>'
+        body = body + '</v1:createRequest>'
+        body = body + '</soapenv:Body>'
+        body = body + '</soapenv:Envelope>'
+        
+        xml_as_string = requests.post(self._thisURL,data=body,headers=headers).content.decode('utf-8')
+        print(xml_as_string)
+        tree = etree.fromstring(xml_as_string)
+        results = ''
+        for result_tag in tree.findall('.//{http://openclinica.org/ws/studySubject/v1}result'):
+            results = results + result_tag.text
+        if(results == 'Fail'):
+            for result_tag in tree.findall('.//{http://openclinica.org/ws/studySubject/v1}error'):
+                results = results + ': ' + result_tag.text
+        return results
+
+
 
 class dataWS(object):
     '''
@@ -105,16 +154,6 @@ class dataWS(object):
             results = results + result_tag.text
         
         return results
-
-
-def main():
-    """
-    This is just for testing if the webservice for DataImport is working!
-    """
-    print("start")
-    all_tokens = 'SC fsredt 20170401&#10;v1 sfdret 20170501&#10;v2 hkdhdt N'
-    myImport = dataWS('oli_oc', 'Ged12gra', 'https://crfblite.com/oc_test_ws').importLSData('SS_GER004', all_tokens)
-    print(myImport)
     
 if __name__ == "__main__":
-    main() 
+    pass 

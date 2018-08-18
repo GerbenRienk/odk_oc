@@ -6,7 +6,9 @@ Created on 14 apr. 2017
 @author: GerbenRienk
 '''
 import psycopg2
+from psycopg2.extras import RealDictCursor
 from utils.dictfile import readDictFile
+
 
 class ConnToOdkUtilDB(object):
     '''Class for connecting to the postgresql database as defined in odkoc.config
@@ -14,7 +16,7 @@ class ConnToOdkUtilDB(object):
     def __init__(self):
         'let us create the connection to use multiple times'
         config=readDictFile('odkoc.config')
-        conn_string = "host='" + config['db_host'] + "' dbname='" + config['db_name'] + "' user='" + config['db_user'] + "' password='" + config['db_pass'] + "'"
+        conn_string = "host='" + config['db_util_host'] + "' dbname='" + config['db_util_name'] + "' user='" + config['db_util_user'] + "' password='" + config['db_util_pass'] + "'"
         self.init_result = ''
         
         # get a connection, if a connect cannot be made an exception will be raised here
@@ -75,6 +77,35 @@ class ConnToOdkUtilDB(object):
         if not results:
             results = ['']
         return results[0]
+
+class ConnToOdkDB(object):
+    '''Class for connecting to the postgresql database as defined in odkoc.config
+    Methods implemented now are read subjects and add subjects '''
+    def __init__(self):
+        'let us create the connection to use multiple times'
+        config=readDictFile('odkoc.config')
+        conn_string = "host='" + config['db_host'] + "' dbname='" + config['db_name'] + "' user='" + config['db_user'] + "' password='" + config['db_pass'] + "'"
+        self.init_result = ''
+        
+        # get a connection, if a connect cannot be made an exception will be raised here
+        try:
+            self._conn = psycopg2.connect(conn_string)
+        except:
+            print('unable to class connect with %s' %  (conn_string))
+        
+        self.init_result = 'class connected '
+        
+    def ReadDataFromOdkTable(self, table_name):
+        'method to read table subjects into a list'
+        cursor = self._conn.cursor(cursor_factory=RealDictCursor)  
+        sql_statement = "SELECT * from " + table_name 
+        try:
+            cursor.execute(sql_statement)
+        except:
+            print ("not able to execute: " + sql_statement)
+        results = cursor.fetchall()
+        return results
+
         
 
 class PGSubject(object):
