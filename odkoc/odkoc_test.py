@@ -207,7 +207,7 @@ def cycle_through_syncs():
                 if (study_subject_oid.find('SS_') == 0):
                     conn_util.AddSubjectToDB(study_subject_oid, study_subject_id)
             
-            # only import the data if this hasn't been done before
+            # only import the data if this hasn't been done before  
             if (not conn_util.UriComplete(odk_result['_URI'])):   
                 # now we should have the study subject id plus oid, so we can compose the odm for import                
                 study_subject_id = odk_result['GENERAL_INFORMATION_STUDY_SUBJECT_ID']
