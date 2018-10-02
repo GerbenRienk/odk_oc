@@ -8,6 +8,7 @@ import hashlib
 import zeep 
 from lxml import etree
 from zeep.wsse import UsernameToken
+import requests
 
 class studySubjectWS(object):
     '''
@@ -26,7 +27,6 @@ class studySubjectWS(object):
             strict=False,
             wsse=UsernameToken(username, password=passwordHash))
         
-
     def getStudySubjectEvents(self,studyIdentifier):
         """Get xml output of study subject events
 
@@ -71,6 +71,21 @@ class studySubjectWS(object):
                             
         return all_studysubject_events
 
+    def getListStudySubjects(self,studyIdentifier):
+        for all_subjects in self.getStudySubjectEvents(studyIdentifier):    
+            #initialise a list to return
+            all_studysubjects = []
+            for one_subject in all_subjects.xpath('//ns2:studySubject', namespaces={'ns2': 'http://openclinica.org/ws/beans'}):
+                for one_subject_infoblocks in one_subject.getchildren():
+                    #is this the label?
+                    if one_subject_infoblocks.tag == '{http://openclinica.org/ws/beans}label':
+                        studySubjectID = one_subject_infoblocks.text
+                               
+                one_studysubject = studySubjectID
+                all_studysubjects.append(one_studysubject)
+                            
+        return all_studysubjects
+
     def addStudySubject(self,studyIdentifier,studysubjectid):
         import requests
      
@@ -103,17 +118,78 @@ class studySubjectWS(object):
         body = body + '</soapenv:Envelope>'
         
         xml_as_string = requests.post(self._thisURL,data=body,headers=headers).content.decode('utf-8')
-        print(xml_as_string)
         tree = etree.fromstring(xml_as_string)
         results = ''
         for result_tag in tree.findall('.//{http://openclinica.org/ws/studySubject/v1}result'):
             results = results + result_tag.text
         if(results == 'Fail'):
             for result_tag in tree.findall('.//{http://openclinica.org/ws/studySubject/v1}error'):
-                results = results + ': ' + result_tag.text
+                results = 'subject ws: ' + results + ': ' + result_tag.text
         return results
 
+class studyEventWS(object):
+    '''
+    class for the study event webservice:
+    to add a study event
+    '''
 
+    def __init__(self, username, password, baseUrl):
+        self._username = username
+        passwordHash = hashlib.sha1(password.encode('utf-8')).hexdigest()
+        self._passwordHash = hashlib.sha1(password.encode('utf-8')).hexdigest()
+        wsUrl = baseUrl + '/ws/event/v1/eventWsdl.wsdl'
+        self._thisURL = wsUrl
+        self._client = zeep.Client(
+            wsUrl,
+            strict=False,
+            wsse=UsernameToken(username, password=passwordHash))
+
+    def scheduleEvent(self,studyIdentifier,studysubjectid, event_definition_oid, location, start_date):
+        import requests
+     
+        headers = {'content-type': 'text/xml'}
+    
+        body = ''
+        body = body + '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://openclinica.org/ws/studyEventDefinition/v1" xmlns:bean="http://openclinica.org/ws/beans">'
+        body = body + '  <soapenv:Header>'
+        body = body + '    <wsse:Security soapenv:mustUnderstand="1" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">'
+        body = body + '      <wsse:UsernameToken wsu:Id="UsernameToken-27777511" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">'
+        body = body + '        <wsse:Username>' + self._username + '</wsse:Username>'
+        body = body + '        <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">' + self._passwordHash + '</wsse:Password>'
+        body = body + '      </wsse:UsernameToken>'
+        body = body + '    </wsse:Security>'
+        body = body + '  </soapenv:Header>'
+        body = body + '  <soapenv:Body>'
+        body = body + '    <v11:scheduleRequest xmlns:v11="http://openclinica.org/ws/event/v1">'
+        body = body + '      <v11:event>'
+        body = body + '        <bean:studySubjectRef>'
+        body = body + '          <bean:label>' + studysubjectid + '</bean:label>'
+        body = body + '        </bean:studySubjectRef>'
+        body = body + '        <bean:studyRef>'
+        body = body + '          <bean:identifier>' + studyIdentifier + '</bean:identifier>'
+        body = body + '        </bean:studyRef>'
+        body = body + '        <bean:eventDefinitionOID>' + event_definition_oid + '</bean:eventDefinitionOID>'
+        body = body + '        <bean:location>' + location + '</bean:location>'
+        body = body + '        <bean:startDate>' + start_date + '</bean:startDate>'
+        body = body + '      </v11:event>'
+        body = body + '    </v11:scheduleRequest>'
+        body = body + '  </soapenv:Body>'
+        body = body + '</soapenv:Envelope>'
+        
+        xml_as_string = requests.post(self._thisURL,data=body,headers=headers).content.decode('utf-8')
+        tree = etree.fromstring(xml_as_string)
+        results = ''
+        for result_tag in tree.findall('.//{http://openclinica.org/ws/studySubject/v1}result'):
+            results = results + result_tag.text
+        if(results == 'Fail'):
+            for result_tag in tree.findall('.//{http://openclinica.org/ws/studySubject/v1}error'):
+                results = 'event ws: ' + results + ': ' + result_tag.text
+        else:
+            # look for this part: <studySubjectOID xmlns="http://openclinica.org/ws/event/v1">
+            for result_tag in tree.findall('.//{http://openclinica.org/ws/event/v1}studySubjectOID'):
+                results = result_tag.text
+           
+        return results
 
 class dataWS(object):
     '''
@@ -125,33 +201,38 @@ class dataWS(object):
         self._wsUrl = baseUrl + '/ws/data/v1/dataWsdl.wsdl'
         self._username = username
         
-    def importLSData(self,studysubjectoid,lsinfo):
-        import requests
-        _dataWsUrl = self._wsUrl + '/ws/data/v1/dataWsdl.wsdl'
+    def importData(self,odm_data):
+        
+        _dataWsUrl = self._wsUrl
         
         headers = {'content-type': 'text/xml'}
-        body = """<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://openclinica.org/ws/data/v1" xmlns:bean="http://openclinica.org/ws/beans"><soapenv:Header>
-         <wsse:Security soapenv:mustUnderstand="1" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
-         <wsse:UsernameToken wsu:Id="UsernameToken-27777511" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">"""
-        body = body + "<wsse:Username>" + self._username + "</wsse:Username>"
-        body = body + ' <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">'
-        body = body +  self._passwordHash + '</wsse:Password>'
-        body = body + '</wsse:UsernameToken></wsse:Security></soapenv:Header><soapenv:Body><v1:importRequest>'
-        body = body + '<ODM><ClinicalData StudyOID="S_CL010" MetaDataVersionOID="v1.0.0">'
-        body = body + '<SubjectData SubjectKey="' + studysubjectoid + '">'
-        body = body + """        
-        <StudyEventData StudyEventOID="SE_SCREENING" >
-        <FormData FormOID="F_PMLIMESURVEY_V1" >
-        <ItemGroupData ItemGroupOID="IG_PMLIM_UNGROUPED" TransactionType="Insert">"""
-        body = body + '<ItemData ItemOID="I_PMLIM_LSDATA" Value="' + lsinfo + '"/>'
-        body = body + '</ItemGroupData></FormData></StudyEventData></SubjectData></ClinicalData></ODM>'
-        body = body + '</v1:importRequest></soapenv:Body></soapenv:Envelope>'
+        body = ''
+        body = body + '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://openclinica.org/ws/data/v1" xmlns:bean="http://openclinica.org/ws/beans">'
+        body = body + '  <soapenv:Header>'
+        body = body + '    <wsse:Security soapenv:mustUnderstand="1" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">'
+        body = body + '      <wsse:UsernameToken wsu:Id="UsernameToken-27777511" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">'
+        body = body + '        <wsse:Username>' + self._username + '</wsse:Username>'
+        body = body + '        <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">' + self._passwordHash + '</wsse:Password>'
+        body = body + '      </wsse:UsernameToken>'
+        body = body + '    </wsse:Security>'
+        body = body + '  </soapenv:Header>'
+        body = body + '  <soapenv:Body>'
+        body = body + '    <v1:importRequest>'
+        body = body + odm_data
+        body = body + '    </v1:importRequest>'
+        body = body + '  </soapenv:Body>'
+        body = body + '</soapenv:Envelope>'
         
         xml_as_string = requests.post(_dataWsUrl,data=body,headers=headers).content.decode('utf-8')
+        #print(xml_as_string)
         tree = etree.fromstring(xml_as_string)
         results = ''
         for result_tag in tree.findall('.//{http://openclinica.org/ws/data/v1}result'):
             results = results + result_tag.text
+            if (result_tag.text == 'Fail'):
+                for result_tag in tree.findall('.//{http://openclinica.org/ws/data/v1}error'):
+                    results = 'data ws: ' + results + ': ' + result_tag.text
+                
         
         return results
     

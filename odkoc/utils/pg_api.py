@@ -9,7 +9,6 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 from utils.dictfile import readDictFile
 
-
 class ConnToOdkUtilDB(object):
     '''Class for connecting to the postgresql database as defined in odkoc.config
     Methods implemented now are read subjects and add subjects '''
@@ -18,7 +17,7 @@ class ConnToOdkUtilDB(object):
         config=readDictFile('odkoc.config')
         conn_string = "host='" + config['db_util_host'] + "' dbname='" + config['db_util_name'] + "' user='" + config['db_util_user'] + "' password='" + config['db_util_pass'] + "'"
         self.init_result = ''
-        
+
         # get a connection, if a connect cannot be made an exception will be raised here
         try:
             self._conn = psycopg2.connect(conn_string)
@@ -42,11 +41,24 @@ class ConnToOdkUtilDB(object):
         It is made to handle multiple inserts
         """
         cursor = self._conn.cursor()  
-        print("in AddSubjects: ", dict_of_subjects)
         try:
-            cursor.executemany("""INSERT INTO subjects(study_subject_oid,study_subject_id) VALUES (%s, %s)""", dict_of_subjects)
+            cursor.executemany("""INSERT INTO study_subject_oc (study_subject_oid,study_subject_id) VALUES (%s, %s)""", dict_of_subjects)
         except:
-            print ("not able to execute the insert")
+            print ("AddSubjectsToDB: not able to execute the insert")
+        self._conn.commit()
+        return None
+
+    def AddSubjectToDB(self, study_subject_oid, study_subject_id):
+        """ Method to add a dictionary of subjects to the table subjects
+        It is made to handle multiple inserts
+        """
+        cursor = self._conn.cursor()  
+        sql_statement = """INSERT INTO study_subject_oc (study_subject_oid,study_subject_id) VALUES ('%s', '%s')""" % (study_subject_oid, study_subject_id)
+        #print(sql_statement)
+        try:
+            cursor.execute(sql_statement)
+        except:
+            print ("AddSubjectToDB: not able to execute the insert")
         self._conn.commit()
         return None
     
@@ -69,6 +81,7 @@ class ConnToOdkUtilDB(object):
         '''
         cursor = self._conn.cursor()  
         sql_statement = "SELECT " + field_name + " from " + table_name + " where " + where_clause
+        
         try:
             cursor.execute(sql_statement)
         except:
@@ -77,6 +90,30 @@ class ConnToOdkUtilDB(object):
         if not results:
             results = ['']
         return results[0]
+    
+    def MarkUriComplete(self, uri, table_name = 'none'):
+        '''method to call with an odk-uri as parameter
+        calling it will set the status of the uri to complete in table odkoc.uri_status
+        '''
+        cursor = self._conn.cursor()  
+        try:
+            cursor.execute("insert into odkoc.uri_status (uri, last_update_status, is_complete, table_name) select '%s', now(), true, '%s'" % (uri, table_name))
+        except:
+            print ("MarkUriComplete: not able to execute the update")
+        self._conn.commit()
+        
+
+    def UriComplete(self, uri):
+        '''method to call with an odk-uri as parameter
+        if uri has been processed an data have been impotred into oc
+        then return true,
+        otherwise return false
+        '''
+        if(self.DLookup('is_complete', 'odkoc.uri_status', "uri='%s'" % uri)):
+            _uri_status = True
+        else:
+            _uri_status = False
+        return _uri_status
 
 class ConnToOdkDB(object):
     '''Class for connecting to the postgresql database as defined in odkoc.config
@@ -95,14 +132,14 @@ class ConnToOdkDB(object):
         
         self.init_result = 'class connected '
         
-    def ReadDataFromOdkTable(self, table_name):
+    def ReadDataFromOdkTable(self, table_name, where_clause = 'True'):
         'method to read table subjects into a list'
         cursor = self._conn.cursor(cursor_factory=RealDictCursor)  
-        sql_statement = "SELECT * from " + table_name 
+        sql_statement = "SELECT * from " + table_name + " where " + where_clause
         try:
             cursor.execute(sql_statement)
         except:
-            print ("not able to execute: " + sql_statement)
+            print ("ReadDataFromOdkTable: not able to execute: " + sql_statement)
         results = cursor.fetchall()
         return results
 

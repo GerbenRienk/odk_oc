@@ -11,7 +11,7 @@ def test_it():
 
     # initialise the oc-webservice
     myWebService = studySubjectWS(config['userName'], config['password'], config['baseUrl'])
-    my_results = myWebService.addStudySubject('MA006','TDS002')
+    my_results = myWebService.getListStudySubjects('MA006')
     print(my_results)
     
 if __name__ == '__main__':

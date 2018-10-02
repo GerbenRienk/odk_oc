@@ -2,7 +2,6 @@ import requests
 import json
 from collections import OrderedDict
 
-
 class LimeSurveyRemoteControl2API(object):
 
     def __init__(self, url):

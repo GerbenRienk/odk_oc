@@ -1,7 +1,0 @@
-# this files holds the combinations of StudyEVentOIDs and corresponding LimeSurvey survey-ids
-# each event should have exactly one sid
-SE_SCREENING 1
-SE_3M        995571
-SE_6M        866421
-SE_12M       658255
-SE_24M       686713
