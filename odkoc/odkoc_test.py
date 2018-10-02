@@ -122,7 +122,7 @@ def cycle_through_syncs():
             if (not conn_util.UriComplete(odk_result['_URI'])):   
                 # now we should have the study subject id plus oid, so we can compose the odm for import                
                 study_subject_id = odk_result['INFORMED_CONSENT_STUDY_SUBJECT_ID']
-                study_subject_oid = conn_util.DLookup('study_subject_oid', 'study_subject_oc', 'study_subject_id=\'%s\'' % (study_subject_id))
+                study_subject_oid = conn_util.DLookup('study_subject_oid', 'odkoc.study_subject_oc', 'study_subject_id=\'%s\'' % (study_subject_id))
                 complete_odm = compose_screening(study_subject_oid, odk_result)
                 
                 # we'll make an exception for I_MA006_OTHER_DISEASE_HX, because this is a group of check-boxes
@@ -211,7 +211,7 @@ def cycle_through_syncs():
             if (not conn_util.UriComplete(odk_result['_URI'])):   
                 # now we should have the study subject id plus oid, so we can compose the odm for import                
                 study_subject_id = odk_result['GENERAL_INFORMATION_STUDY_SUBJECT_ID']
-                study_subject_oid = conn_util.DLookup('study_subject_oid', 'study_subject_oc', 'study_subject_id=\'%s\'' % (study_subject_id))
+                study_subject_oid = conn_util.DLookup('study_subject_oid', 'odkoc.study_subject_oc', 'study_subject_id=\'%s\'' % (study_subject_id))
                 complete_odm = compose_lamp(study_subject_oid, odk_result)
             
                 import_results = myDataWS.importData(complete_odm)
