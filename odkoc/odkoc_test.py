@@ -74,7 +74,7 @@ def cycle_through_syncs():
             if (not conn_util.UriComplete(odk_result['_URI'])):   
                 # now we should have the study subject id plus oid, so we can compose the odm for import                
                 study_subject_id = odk_result['GENERAL_INFORMATION_STUDY_SUBJECT_ID']
-                study_subject_oid = conn_util.DLookup('study_subject_oid', 'study_subject_oc', 'study_subject_id=\'%s\'' % (study_subject_id))
+                study_subject_oid = conn_util.DLookup('study_subject_oid', 'odkoc.study_subject_oc', 'study_subject_id=\'%s\'' % (study_subject_id))
                 complete_odm = compose_reader(study_subject_oid, odk_result)
 
                 import_results = myDataWS.importData(complete_odm)

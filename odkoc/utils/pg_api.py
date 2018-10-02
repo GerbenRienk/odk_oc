@@ -42,7 +42,7 @@ class ConnToOdkUtilDB(object):
         """
         cursor = self._conn.cursor()  
         try:
-            cursor.executemany("""INSERT INTO study_subject_oc (study_subject_oid,study_subject_id) VALUES (%s, %s)""", dict_of_subjects)
+            cursor.executemany("""INSERT INTO odkoc.study_subject_oc (study_subject_oid,study_subject_id) VALUES (%s, %s)""", dict_of_subjects)
         except:
             print ("AddSubjectsToDB: not able to execute the insert")
         self._conn.commit()
@@ -53,7 +53,7 @@ class ConnToOdkUtilDB(object):
         It is made to handle multiple inserts
         """
         cursor = self._conn.cursor()  
-        sql_statement = """INSERT INTO study_subject_oc (study_subject_oid,study_subject_id) VALUES ('%s', '%s')""" % (study_subject_oid, study_subject_id)
+        sql_statement = """INSERT INTO odkoc.study_subject_oc (study_subject_oid,study_subject_id) VALUES ('%s', '%s')""" % (study_subject_oid, study_subject_id)
         #print(sql_statement)
         try:
             cursor.execute(sql_statement)
