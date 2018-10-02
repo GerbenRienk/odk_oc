@@ -15,7 +15,7 @@ class ConnToOdkUtilDB(object):
     def __init__(self):
         'let us create the connection to use multiple times'
         config=readDictFile('odkoc.config')
-        conn_string = "host='" + config['db_util_host'] + "' dbname='" + config['db_util_name'] + "' user='" + config['db_util_user'] + "' password='" + config['db_util_pass'] + "'"
+        conn_string = "host='" + config['db_util_host'] + "' dbname='" + config['db_util_name'] + "' user='" + config['db_util_user'] + "' password='" + config['db_util_pass'] + "' port='" + config['db_util_port'] + "'" 
         self.init_result = ''
 
         # get a connection, if a connect cannot be made an exception will be raised here
@@ -121,7 +121,7 @@ class ConnToOdkDB(object):
     def __init__(self):
         'let us create the connection to use multiple times'
         config=readDictFile('odkoc.config')
-        conn_string = "host='" + config['db_host'] + "' dbname='" + config['db_name'] + "' user='" + config['db_user'] + "' password='" + config['db_pass'] + "'"
+        conn_string = "host='" + config['db_host'] + "' dbname='" + config['db_name'] + "' user='" + config['db_user'] + "' password='" + config['db_pass'] + "' port='" + config['db_port'] + "'"
         self.init_result = ''
         
         # get a connection, if a connect cannot be made an exception will be raised here
