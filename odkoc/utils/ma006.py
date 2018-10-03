@@ -26,7 +26,7 @@ def compose_lamp(study_subject_oid, data_odk):
     _odm_data = _odm_data + '    <SubjectData SubjectKey="' + study_subject_oid + '">'
     _odm_data = _odm_data + '      <StudyEventData StudyEventOID="SE_BASELINE_9367">'
     _odm_data = _odm_data + '        <FormData FormOID="F_MA006HSRDTMI_3111_12">'
-    _odm_data = _odm_data + '          <ItemGroupData ItemGroupOID="IG_MA006_UNGROUPED_5083" ItemGroupRepeatKey="1" TransactionType="Insert">'
+    _odm_data = _odm_data + '          <ItemGroupData ItemGroupOID="IG_MA006_UNGROUPED_6584" ItemGroupRepeatKey="1" TransactionType="Insert">'
     # section a
     _odm_data = _odm_data + write_odm_line('I_MA006_LAMP_D', data_odk['GENERAL_INFORMATION_LAMP_D'], is_date=True)
     _odm_data = _odm_data + write_odm_line('I_MA006_LAMP_INIT', data_odk['GENERAL_INFORMATION_LAMP_INIT'])
@@ -115,7 +115,7 @@ def compose_screening(study_subject_oid, data_odk):
     _odm_data = _odm_data + '    <SubjectData SubjectKey="' + study_subject_oid + '">'
     _odm_data = _odm_data + '      <StudyEventData StudyEventOID="SE_BASELINE_9367">'
     _odm_data = _odm_data + '        <FormData FormOID="F_MA006HSRDTMI_9049_16">'
-    _odm_data = _odm_data + '          <ItemGroupData ItemGroupOID="IG_MA006_UNGROUPED_1205" ItemGroupRepeatKey="1" TransactionType="Insert">'
+    _odm_data = _odm_data + '          <ItemGroupData ItemGroupOID="IG_MA006_UNGROUPED_9336" ItemGroupRepeatKey="1" TransactionType="Insert">'
     
     # section a
     _screening_date = data_odk['GENERAL_INFORMATION_SCREENING_D'].strftime('%Y-%m-%d')
