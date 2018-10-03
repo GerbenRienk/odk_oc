@@ -24,8 +24,8 @@ def compose_lamp(study_subject_oid, data_odk):
     _odm_data = _odm_data + '<ODM>'
     _odm_data = _odm_data + '  <ClinicalData StudyOID="S_MA006_HS">'
     _odm_data = _odm_data + '    <SubjectData SubjectKey="' + study_subject_oid + '">'
-    _odm_data = _odm_data + '      <StudyEventData StudyEventOID="SE_BASELINE_8410">'
-    _odm_data = _odm_data + '        <FormData FormOID="F_MA006HSRDTMI_4942_12">'
+    _odm_data = _odm_data + '      <StudyEventData StudyEventOID="SE_BASELINE_9367">'
+    _odm_data = _odm_data + '        <FormData FormOID="F_MA006HSRDTMI_3111_12">'
     _odm_data = _odm_data + '          <ItemGroupData ItemGroupOID="IG_MA006_UNGROUPED_5083" ItemGroupRepeatKey="1" TransactionType="Insert">'
     # section a
     _odm_data = _odm_data + write_odm_line('I_MA006_LAMP_D', data_odk['GENERAL_INFORMATION_LAMP_D'], is_date=True)
@@ -52,8 +52,8 @@ def compose_misca(study_subject_oid, data_odk):
     _odm_data = _odm_data + '<ODM>'
     _odm_data = _odm_data + '  <ClinicalData StudyOID="S_MA006_HS">'
     _odm_data = _odm_data + '    <SubjectData SubjectKey="' + study_subject_oid + '">'
-    _odm_data = _odm_data + '      <StudyEventData StudyEventOID="SE_BASELINE_8410">'
-    _odm_data = _odm_data + '        <FormData FormOID="F_MA006HSRDTMI_7576_16">'
+    _odm_data = _odm_data + '      <StudyEventData StudyEventOID="SE_BASELINE_9367">'
+    _odm_data = _odm_data + '        <FormData FormOID="F_MA006HSRDTMI_9049_16">'
     _odm_data = _odm_data + '          <ItemGroupData ItemGroupOID="IG_MA006_MISCA" ItemGroupRepeatKey="' + str(data_odk['_ORDINAL_NUMBER']) + '" TransactionType="Insert">'
     
     # section a
@@ -87,7 +87,7 @@ def compose_reader(study_subject_oid, data_odk):
     _odm_data = _odm_data + '<ODM>'
     _odm_data = _odm_data + '  <ClinicalData StudyOID="S_MA006_HS">'
     _odm_data = _odm_data + '    <SubjectData SubjectKey="' + study_subject_oid + '">'
-    _odm_data = _odm_data + '      <StudyEventData StudyEventOID="SE_BASELINE_8410">'
+    _odm_data = _odm_data + '      <StudyEventData StudyEventOID="SE_BASELINE_9367">'
     _odm_data = _odm_data + '        <FormData FormOID="F_MA006HSRDTMI_13">'
     _odm_data = _odm_data + '          <ItemGroupData ItemGroupOID="IG_MA006_UNGROUPED" ItemGroupRepeatKey="1" TransactionType="Insert">'
     
@@ -113,8 +113,8 @@ def compose_screening(study_subject_oid, data_odk):
     _odm_data = _odm_data + '<ODM>'
     _odm_data = _odm_data + '  <ClinicalData StudyOID="S_MA006_HS">'
     _odm_data = _odm_data + '    <SubjectData SubjectKey="' + study_subject_oid + '">'
-    _odm_data = _odm_data + '      <StudyEventData StudyEventOID="SE_BASELINE_8410">'
-    _odm_data = _odm_data + '        <FormData FormOID="F_MA006HSRDTMI_7576_16">'
+    _odm_data = _odm_data + '      <StudyEventData StudyEventOID="SE_BASELINE_9367">'
+    _odm_data = _odm_data + '        <FormData FormOID="F_MA006HSRDTMI_9049_16">'
     _odm_data = _odm_data + '          <ItemGroupData ItemGroupOID="IG_MA006_UNGROUPED_1205" ItemGroupRepeatKey="1" TransactionType="Insert">'
     
     # section a
