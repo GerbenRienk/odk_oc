@@ -61,7 +61,7 @@ def cycle_through_syncs():
                 #print(add_results)
                 # TODO: add error-handling for fail of creating subject 
                 # and schedule the event
-                study_subject_oid = myEventWS.scheduleEvent(config['studyIdentifier'], study_subject_id,config['studyEventOID'], 'def', '1980-01-01')
+                study_subject_oid = myEventWS.scheduleEvent(config['studyIdentifier'], study_subject_id, config['studyEventOID'], 'def', '1980-01-01')
                 #TODO: add errorhandling for fail of scheduling event 
                 
                 # now add the combination id oid to the util database
@@ -69,7 +69,11 @@ def cycle_through_syncs():
                 if (study_subject_oid.find('SS_') == 0):
                     conn_util.AddSubjectToDB(study_subject_oid, study_subject_id)
             
-            
+            # extra check: maybe we somehow missed the study subject oid and then there will be no record in table study_subject_oc
+            if (conn_util.DLookup('study_subject_oid', 'odkoc.study_subject_oc', 'study_subject_id=\'%s\'' % (study_subject_id)) == ''):
+                new_subject = PGSubject(study_subject_id)
+                conn_util.AddSubjectToDB(new_subject.GetSSOID(), study_subject_id)
+                
             # only import the data if this hasn't been done before
             if (not conn_util.UriComplete(odk_result['_URI'])):   
                 # now we should have the study subject id plus oid, so we can compose the odm for import                
@@ -117,6 +121,11 @@ def cycle_through_syncs():
                 # only add the pair if the oid starts with SS_
                 if (study_subject_oid.find('SS_') == 0):
                     conn_util.AddSubjectToDB(study_subject_oid, study_subject_id)
+
+            # extra check: maybe we somehow missed the study subject oid and then there will be no record in table study_subject_oc
+            if (conn_util.DLookup('study_subject_oid', 'odkoc.study_subject_oc', 'study_subject_id=\'%s\'' % (study_subject_id)) == ''):
+                new_subject = PGSubject(study_subject_id)
+                conn_util.AddSubjectToDB(new_subject.GetSSOID(), study_subject_id)    
             
             # only import the data if this hasn't been done before
             if (not conn_util.UriComplete(odk_result['_URI'])):   
@@ -206,6 +215,11 @@ def cycle_through_syncs():
                 # only add the pair if the oid starts with SS_
                 if (study_subject_oid.find('SS_') == 0):
                     conn_util.AddSubjectToDB(study_subject_oid, study_subject_id)
+
+            # extra check: maybe we somehow missed the study subject oid and then there will be no record in table study_subject_oc
+            if (conn_util.DLookup('study_subject_oid', 'odkoc.study_subject_oc', 'study_subject_id=\'%s\'' % (study_subject_id)) == ''):
+                new_subject = PGSubject(study_subject_id)
+                conn_util.AddSubjectToDB(new_subject.GetSSOID(), study_subject_id)    
             
             # only import the data if this hasn't been done before  
             if (not conn_util.UriComplete(odk_result['_URI'])):   

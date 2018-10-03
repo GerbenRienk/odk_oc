@@ -58,7 +58,7 @@ class ConnToOdkUtilDB(object):
         try:
             cursor.execute(sql_statement)
         except:
-            print ("AddSubjectToDB: not able to execute the insert")
+            print ("AddSubjectToDB: not able to execute the insert '%s', '%s' " % (study_subject_oid, study_subject_id))
         self._conn.commit()
         return None
     
@@ -172,7 +172,7 @@ class PGSubject(object):
         mySession.post(login_url,params=login_action,data=login_payload)
         cd_url = config['baseUrlRest'] + '/rest/clinicaldata/xml/view/' + config['studyOid'] + '/'
         cd_url = cd_url + self._studysubjectid + '/*/*'
-        print(cd_url)
+        # print(cd_url)
         clinical_data = mySession.get(cd_url)
         
         document = clinical_data.content
