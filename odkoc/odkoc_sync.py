@@ -1,6 +1,6 @@
 '''
 Created on 20180818
-
+extra support and a better name
 @author: GerbenRienk
 '''
 import time
