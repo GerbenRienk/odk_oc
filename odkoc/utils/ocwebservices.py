@@ -86,7 +86,7 @@ class studySubjectWS(object):
                             
         return all_studysubjects
 
-    def addStudySubject(self,studyIdentifier,studysubjectid):
+    def addStudySubject(self,studyIdentifier, siteIdentifier, studysubjectid):
         import requests
      
         headers = {'content-type': 'text/xml'}
@@ -111,6 +111,9 @@ class studySubjectWS(object):
         body = body + '</bean:subject>'
         body = body + '<bean:studyRef>'
         body = body + '<bean:identifier>' + studyIdentifier + '</bean:identifier>'
+        body = body + '<bean:siteRef>'
+        body = body + '<bean:identifier>' + siteIdentifier + '</bean:identifier>'
+        body = body + '</bean:siteRef>'
         body = body + '</bean:studyRef>'
         body = body + '</v1:studySubject>'
         body = body + '</v1:createRequest>'

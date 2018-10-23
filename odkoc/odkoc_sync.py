@@ -57,7 +57,7 @@ def cycle_through_syncs():
                     
             if (add_subject_to_db):
                 # add study_subject_id to the oc
-                add_results = myWebService.addStudySubject(config['studyIdentifier'], study_subject_id)
+                add_results = myWebService.addStudySubject(config['studyIdentifier'], config['siteIdentifier'], study_subject_id)
                 #print(add_results)
                 # TODO: add error-handling for fail of creating subject 
                 # and schedule the event
@@ -111,7 +111,7 @@ def cycle_through_syncs():
                     
             if (add_subject_to_db):
                 # add study_subject_id to the oc
-                add_results = myWebService.addStudySubject(config['studyIdentifier'], study_subject_id)
+                add_results = myWebService.addStudySubject(config['studyIdentifier'], config['siteIdentifier'], study_subject_id)
                 # TODO: add error-handling for fail of creating subject 
                 # and schedule the event
                 study_subject_oid = myEventWS.scheduleEvent(config['studyIdentifier'], study_subject_id,config['studyEventOID'], 'def', '1980-01-01')
@@ -205,7 +205,7 @@ def cycle_through_syncs():
                     
             if (add_subject_to_db):
                 # add study_subject_id to the oc
-                add_results = myWebService.addStudySubject(config['studyIdentifier'], study_subject_id)
+                add_results = myWebService.addStudySubject(config['studyIdentifier'], config['siteIdentifier'], study_subject_id)
                 # TODO: add error-handling for fail of creating subject 
                 # and schedule the event
                 study_subject_oid = myEventWS.scheduleEvent(config['studyIdentifier'], study_subject_id,config['studyEventOID'], 'def', '1980-01-01')
