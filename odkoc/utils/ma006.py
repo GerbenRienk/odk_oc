@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-def write_odm_line( oc_item_name, odk_item_value, is_date=False, is_time=False, is_numeric=False):
+def write_odm_line( oc_item_name, odk_item_value, is_date=False, is_time=False, is_numeric=False, is_utf8 = False):
     _one_line = ''
     if (odk_item_value):
         _this_value = odk_item_value
@@ -12,6 +12,12 @@ def write_odm_line( oc_item_name, odk_item_value, is_date=False, is_time=False, 
             _this_value = corrected_time.strftime('%H:%M')
         if (is_numeric):
             _this_value = str(odk_item_value)
+        if (is_utf8):
+            _this_value = str(_this_value.encode(encoding="ascii",errors="xmlcharrefreplace"))
+            # now we have something like b'some text &amp; more' so we want to loose the first two characters and the last one
+            # TODO: make this nicer somehow
+            _this_value = _this_value[2:]
+            _this_value = _this_value[:-1]
                     
         _one_line = _one_line + '            <ItemData ItemOID="' + oc_item_name + '" Value="' + _this_value + '"/>'
     else:
@@ -159,10 +165,10 @@ def compose_screening(study_subject_oid, data_odk):
     _odm_data = _odm_data + write_odm_line('I_MA006_MAL_HX_D', data_odk['MED_HISTO_CONCO_MED_MAL_HX_D'], is_date=True)
     _odm_data = _odm_data + write_odm_line('I_MA006_MAL_HX_DX', data_odk['MED_HISTO_CONCO_MED_MAL_HX_DX'])
     _odm_data = _odm_data + write_odm_line('I_MA006_MAL_HX_TX', data_odk['MED_HISTO_CONCO_MED_MAL_HX_TX'])
-    _odm_data = _odm_data + write_odm_line('I_MA006_MAL_HX_TX_OT', data_odk['MED_HISTO_CONCO_MED_MAL_HX_TX_OT'])
+    _odm_data = _odm_data + write_odm_line('I_MA006_MAL_HX_TX_OT', data_odk['MED_HISTO_CONCO_MED_MAL_HX_TX_OT'], is_utf8=True)
     # the next line is an exception, because this is a group of check-boxes; we will use a placeholder here and replace that later
     _odm_data = _odm_data + write_odm_line('I_MA006_OTHER_DISEASE_HX', '{OTHER_DISEASE_HX}')
-    _odm_data = _odm_data + write_odm_line('I_MA006_OTHER_DISEASE_HX_OT', data_odk['MED_HISTO_CONCO_MED_OTHER_DISEASE_HX_OT'])
+    _odm_data = _odm_data + write_odm_line('I_MA006_OTHER_DISEASE_HX_OT', data_odk['MED_HISTO_CONCO_MED_OTHER_DISEASE_HX_OT'], is_utf8=True)
     # section g
     _odm_data = _odm_data + write_odm_line('I_MA006_MENST_1ST_DAY', data_odk['OBSETRIC_INFO_EXAM_MENST_1_ST_DAY'], is_date=True)
     _odm_data = _odm_data + write_odm_line('I_MA006_MENST_1ST_DAY_UNKNOWN', data_odk['OBSETRIC_INFO_EXAM_MENST_1_ST_DAY_UNKNOWN'])
@@ -202,7 +208,7 @@ def compose_screening(study_subject_oid, data_odk):
     _odm_data = _odm_data + write_odm_line('I_MA006_RECO_COUNS_SYMPT', data_odk['PAT_RECO_RECO_COUNS_SYMPT'])
     _odm_data = _odm_data + write_odm_line('I_MA006_RECO_T', data_odk['PAT_RECO_RECO_T'], is_time=True)    
     # section k
-    _odm_data = _odm_data + write_odm_line('I_MA006_SCREEN_ELI_COMMENTS', data_odk['COMMENTS_SCREEN_ELI_COMMENTS'])
+    _odm_data = _odm_data + write_odm_line('I_MA006_SCREEN_ELI_COMMENTS', data_odk['COMMENTS_SCREEN_ELI_COMMENTS'], is_utf8=True)
 
     # closing it all
     _odm_data = _odm_data + '          </ItemGroupData>'
