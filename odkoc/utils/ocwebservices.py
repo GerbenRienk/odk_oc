@@ -87,7 +87,6 @@ class studySubjectWS(object):
         return all_studysubjects
 
     def addStudySubject(self,studyIdentifier, siteIdentifier, studysubjectid):
-        import requests
      
         headers = {'content-type': 'text/xml'}
         body = """<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://openclinica.org/ws/studySubject/v1" xmlns:bean="http://openclinica.org/ws/beans"><soapenv:Header>
@@ -148,7 +147,6 @@ class studyEventWS(object):
             wsse=UsernameToken(username, password=passwordHash))
 
     def scheduleEvent(self,studyIdentifier,studysubjectid, event_definition_oid, location, start_date):
-        import requests
      
         headers = {'content-type': 'text/xml'}
     
@@ -227,7 +225,7 @@ class dataWS(object):
         body = body + '</soapenv:Envelope>'
         
         xml_as_string = requests.post(_dataWsUrl,data=body,headers=headers).content.decode('utf-8')
-        #print(xml_as_string)
+        print(xml_as_string)
         tree = etree.fromstring(xml_as_string)
         results = ''
         for result_tag in tree.findall('.//{http://openclinica.org/ws/data/v1}result'):
