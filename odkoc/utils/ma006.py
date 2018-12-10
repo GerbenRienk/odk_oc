@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import  timedelta
 
 def write_odm_line( oc_item_name, odk_item_value, is_date=False, is_time=False, is_numeric=False, is_utf8 = False):
     _one_line = ''
@@ -13,6 +13,8 @@ def write_odm_line( oc_item_name, odk_item_value, is_date=False, is_time=False, 
         if (is_numeric):
             _this_value = str(odk_item_value)
         if (is_utf8):
+            # make exception for the &
+            _this_value = _this_value.replace('&', '&amp;')
             _this_value = str(_this_value.encode(encoding="ascii",errors="xmlcharrefreplace"))
             # now we have something like b'some text &amp; more' so we want to loose the first two characters and the last one
             # TODO: make this nicer somehow

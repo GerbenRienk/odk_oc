@@ -225,15 +225,19 @@ class dataWS(object):
         body = body + '</soapenv:Envelope>'
         
         xml_as_string = requests.post(_dataWsUrl,data=body,headers=headers).content.decode('utf-8')
-        print(xml_as_string)
+        
         tree = etree.fromstring(xml_as_string)
         results = ''
+        # first check if we were able to compose a valid soap request
+        for soap_fault in tree.findall('.//faultstring'):
+            results = results + soap_fault.text + body
+        
+        # now check what the web service gave as response    
         for result_tag in tree.findall('.//{http://openclinica.org/ws/data/v1}result'):
             results = results + result_tag.text
             if (result_tag.text == 'Fail'):
                 for result_tag in tree.findall('.//{http://openclinica.org/ws/data/v1}error'):
-                    results = 'data ws: ' + results + ': ' + result_tag.text
-                
+                    results = 'data ws: ' + results + ': ' + result_tag.text       
         
         return results
     

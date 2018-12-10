@@ -7,5 +7,6 @@
 <path>/${PROJECT_DIR_NAME}/odkoc/config</path>
 <path>/${PROJECT_DIR_NAME}/odkoc/logs</path>
 <path>/${PROJECT_DIR_NAME}/odkoc/utils</path>
+<path>/${PROJECT_DIR_NAME}/odkoc</path>
 </pydev_pathproperty>
 </pydev_project>
