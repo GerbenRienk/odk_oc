@@ -1,5 +1,5 @@
 start of report
-cycle started at 2018-10-03 16:50:21.321869
+cycle started at 2018-12-04 16:42:34.592422
 try to connect to util database, result: class connected  
 try to connect to odk database, result: class connected  
-finished looping from 2018-10-03 16:50:21.321869 till 2018-10-03 16:50:24.678819.
+finished looping from 2018-12-04 16:42:34.592422 till 2018-12-04 16:42:37.675942.
