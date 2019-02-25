@@ -151,8 +151,8 @@ def compose_screening(study_subject_oid, data_odk):
     _odm_data = _odm_data + write_odm_line('I_MA006_DOB', data_odk['SOCIODEMOGRAPHIC_DATA_DOB'], is_date=True)
     _odm_data = _odm_data + write_odm_line('I_MA006_DOB_UK', data_odk['SOCIODEMOGRAPHIC_DATA_DOB_UK'])
     _odm_data = _odm_data + write_odm_line('I_MA006_AGE', data_odk['SOCIODEMOGRAPHIC_DATA_AGE'], is_numeric=True)
-    _odm_data = _odm_data + '            <ItemData ItemOID="I_MA006_MARITAL_STATUS" Value="' + data_odk['SOCIODEMOGRAPHIC_DATA_MARITAL_STATUS'] + '"/>'
-    _odm_data = _odm_data + '            <ItemData ItemOID="I_MA006_BED_NET" Value="' + data_odk['SOCIODEMOGRAPHIC_DATA_BED_NET'] + '"/>'
+    _odm_data = _odm_data + write_odm_line('I_MA006_MARITAL_STATUS', data_odk['SOCIODEMOGRAPHIC_DATA_MARITAL_STATUS'])
+    _odm_data = _odm_data + write_odm_line('I_MA006_BED_NET', data_odk['SOCIODEMOGRAPHIC_DATA_BED_NET'])
     # section f
     _odm_data = _odm_data + write_odm_line('I_MA006_ILL_3D', data_odk['MED_HISTO_CONCO_MED_ILL_3_D'])
     _odm_data = _odm_data + write_odm_line('I_MA006_FEVER', data_odk['MED_HISTO_CONCO_MED_FEVER'])
